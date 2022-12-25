@@ -9,7 +9,7 @@ import torch
 from dgl.data import DGLDataset, load_graphs, save_graphs
 from tqdm import tqdm
 
-from .converter import (
+from webcolor.data.converter import (
     convert_color,
     convert_image,
     convert_order,
@@ -101,7 +101,10 @@ class WebColorDataset(DGLDataset):  # type: ignore
 
     def has_cache(self) -> bool:
         if self.split == "test":
-            return Path(self.get_cache_path("test1")).exists() and Path(self.get_cache_path("test2")).exists()
+            return (
+                Path(self.get_cache_path("test1")).exists()
+                and Path(self.get_cache_path("test2")).exists()
+            )
         else:
             return Path(self.get_cache_path(self.split)).exists()
 
