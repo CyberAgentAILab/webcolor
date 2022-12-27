@@ -20,6 +20,8 @@ from webcolor.data.converter import (
 DATASET_FILE = "webcolor_v1.0.hdf5"
 SPLIT_FILE = "webcolor_split_v1.0.json"
 
+MAX_NODE_SIZE = 200
+
 
 class WebColorDataset(DGLDataset):  # type: ignore
     def __init__(self, split: str = "train") -> None:
@@ -123,4 +125,7 @@ class WebColorDataset(DGLDataset):  # type: ignore
         return len(self.graphs)
 
     def __getitem__(self, i: int) -> dgl.DGLGraph:
-        return self.graphs[i]
+        g = self.graphs[i]
+        # cast uint8 to bool (DGL bug when loading cache?)
+        g.ndata["has_text"] = g.ndata["has_text"].bool()
+        return g

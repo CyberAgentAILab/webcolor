@@ -4,6 +4,7 @@ from typing import Optional
 import numpy as np
 import torch
 
+NUM_COLOR_BINS = 8
 DIM_COLOR = 2  # RGB bin index + alpha bin index
 DIM_TEXT = 12
 DIM_IMAGE = 13
