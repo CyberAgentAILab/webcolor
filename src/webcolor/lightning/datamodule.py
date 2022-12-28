@@ -2,24 +2,21 @@ import dgl
 from pytorch_lightning import LightningDataModule
 from torch.utils.data import DataLoader
 
-from .dataset import WebColorDataset
+from webcolor.data.dataset import WebColorDataset
 
 
-class BaseDataModule(LightningDataModule):
+class WebColorDataModule(LightningDataModule):
     def __init__(
         self,
-        train_dataset: WebColorDataset,
-        val_dataset: WebColorDataset,
-        test_dataset: WebColorDataset,
-        batch_size: int,
-        num_workers: int,
+        batch_size: int = 32,
+        num_workers: int = 4,
     ) -> None:
         super().__init__()
-        self.train_dataset = train_dataset
-        self.val_dataset = val_dataset
-        self.test_dataset = test_dataset
         self.batch_size = batch_size
         self.num_workers = num_workers
+        self.train_dataset = WebColorDataset("train")
+        self.val_dataset = WebColorDataset("val")
+        self.test_dataset = WebColorDataset("test")
 
     def train_dataloader(self) -> DataLoader:
         return dgl.dataloading.GraphDataLoader(  # type: ignore
@@ -47,20 +44,3 @@ class BaseDataModule(LightningDataModule):
             num_workers=self.num_workers,
             pin_memory=True,
         )
-
-
-class GeneratorDataModule(BaseDataModule):
-    def __init__(self, batch_size: int = 32, num_workers: int = 4) -> None:
-        super().__init__(
-            train_dataset=WebColorDataset("train"),
-            val_dataset=WebColorDataset("val"),
-            test_dataset=WebColorDataset("test"),
-            batch_size=batch_size,
-            num_workers=num_workers,
-        )
-
-
-class UpsamplerDataModule(BaseDataModule):
-    def __init__(self, batch_size: int = 32, num_workers: int = 4) -> None:
-        # TODO: implement this
-        raise NotImplementedError

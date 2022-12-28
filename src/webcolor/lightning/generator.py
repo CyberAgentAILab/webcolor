@@ -9,7 +9,7 @@ from torchmetrics.classification import MulticlassAccuracy, MulticlassF1Score
 from torchmetrics.functional.classification import multiclass_accuracy
 
 from webcolor.data.converter import NUM_COLOR_BINS
-from webcolor.models.base_generator import BaseGenerator
+from webcolor.models.base import BaseGenerator
 from webcolor.models.utils import make_batch_mask
 
 
@@ -60,8 +60,8 @@ class LitBaseGenerator(LightningModule):
         g, batch_mask = self._prepare_batch(batch)
         out = self(g, batch_mask)
 
-        # format logit and target
-        key_to_logit_target = self._format_logit_and_target(g, out)
+        # format prediction
+        key_to_logit_target = self._format_prediction(g, out)
 
         # compute loss
         loss_dict = {
@@ -98,7 +98,7 @@ class LitBaseGenerator(LightningModule):
 
         return loss  # type: ignore
 
-    def _format_logit_and_target(
+    def _format_prediction(
         self, g: dgl.DGLGraph, out: Dict[str, torch.Tensor]
     ) -> Dict[str, Tuple[torch.Tensor, torch.Tensor]]:
         # compute text color only for elements having text
@@ -150,8 +150,8 @@ class LitBaseGenerator(LightningModule):
         g, batch_mask = self._prepare_batch(batch)
         out = self.model.generate(g, batch_mask)
 
-        # format logit and target
-        key_to_logit_target = self._format_logit_and_target(g, out)
+        # format prediction
+        key_to_logit_target = self._format_prediction(g, out)
 
         # update all metrics
         for metric_name, metric in self.test_metrics.items():

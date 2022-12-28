@@ -62,8 +62,12 @@ class WebColorDataset(DGLDataset):  # type: ignore
                         dst_ids.append(nf[()])
 
                     # convert features
-                    feat["text_color"].append(convert_color(nf.attrs.get("text_color")))
-                    feat["bg_color"].append(convert_color(nf.attrs["background_color"]))
+                    color, color_res = convert_color(nf.attrs.get("text_color"))
+                    feat["text_color"].append(color)
+                    feat["text_color_res"].append(color_res)
+                    color, color_res = convert_color(nf.attrs.get("background_color"))
+                    feat["bg_color"].append(color)
+                    feat["bg_color_res"].append(color_res)
                     feat["order"].append(convert_order(nf.attrs["sibling_order"]))
                     feat["tag"].append(convert_tag(nf.attrs["html_tag"]))
                     feat["text"].append(convert_text(nf.attrs.get("text_feat")))

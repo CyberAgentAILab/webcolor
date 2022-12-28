@@ -45,26 +45,41 @@ class StyleEncoder(nn.Module):
 
 
 class StyleDecoder(nn.Module):
-    def __init__(self, d_model: int):
+    def __init__(self, d_model: int, pred_residual: bool):
         super().__init__()
 
         nb = NUM_COLOR_BINS
         self.fc_text = nn.Linear(d_model, d_model)
         self.fc_bg = nn.Linear(d_model, d_model)
-        self.fc_rgb = nn.Linear(d_model, nb**3)
-        self.fc_alpha = nn.Linear(d_model, nb)
+
+        self.pred_residual = pred_residual
+        if not pred_residual:
+            self.fc_rgb = nn.Linear(d_model, nb**3)
+            self.fc_alpha = nn.Linear(d_model, nb)
+        else:
+            self.fc_res = nn.Linear(d_model, len("rgba"))
 
     def forward(self, x: torch.Tensor) -> Dict[str, torch.Tensor]:
         x_text = torch.relu(self.fc_text(x))
         x_bg = torch.relu(self.fc_bg(x))
-        x = torch.stack([x_text, x_bg])
 
-        logit_text_rgb, logit_bg_rgb = self.fc_rgb(x)
-        logit_text_alpha, logit_bg_alpha = self.fc_alpha(x)
+        if not self.pred_residual:
+            x = torch.stack([x_text, x_bg])
+            logit_text_rgb, logit_bg_rgb = self.fc_rgb(x)
+            logit_text_alpha, logit_bg_alpha = self.fc_alpha(x)
 
-        return {
-            "logit_text_rgb": logit_text_rgb,
-            "logit_text_alpha": logit_text_alpha,
-            "logit_bg_rgb": logit_bg_rgb,
-            "logit_bg_alpha": logit_bg_alpha,
-        }
+            return {
+                "logit_text_rgb": logit_text_rgb,
+                "logit_text_alpha": logit_text_alpha,
+                "logit_bg_rgb": logit_bg_rgb,
+                "logit_bg_alpha": logit_bg_alpha,
+            }
+
+        else:
+            text_res = torch.sigmoid(self.fc_res(x_text))
+            bg_res = torch.sigmoid(self.fc_res(x_bg))
+
+            return {
+                "pred_text_res": text_res,
+                "pred_bg_res": bg_res,
+            }

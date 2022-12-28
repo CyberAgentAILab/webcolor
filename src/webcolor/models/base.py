@@ -8,11 +8,12 @@ from webcolor.models.content_module import ContentEncoder
 from webcolor.models.style_module import StyleDecoder, StyleEncoder
 
 
-class BaseGenerator(nn.Module):
+class BaseModel(nn.Module):
     def __init__(
         self,
         d_model: int,
         has_style_encoder: bool,
+        pred_residual: bool,
         disable_message_passing: bool = False,
         disable_residual: bool = False,
     ):
@@ -30,7 +31,7 @@ class BaseGenerator(nn.Module):
             self.style_encoder = None
 
         # decoder
-        self.style_decoder = StyleDecoder(d_model)
+        self.style_decoder = StyleDecoder(d_model, pred_residual)
 
     def encode_content(self, g: dgl.DGLGraph) -> torch.Tensor:
         return self.content_encoder(g)  # type: ignore
@@ -59,3 +60,13 @@ class BaseGenerator(nn.Module):
     ) -> Dict[str, torch.Tensor]:
         """Generate colors for testing."""
         raise NotImplementedError
+
+
+class BaseGenerator(BaseModel):
+    def __init__(self, **kwargs: Any):
+        super().__init__(pred_residual=False, **kwargs)
+
+
+class BaseUpsampler(BaseModel):
+    def __init__(self, **kwargs: Any):
+        super().__init__(pred_residual=True, has_style_encoder=True, **kwargs)

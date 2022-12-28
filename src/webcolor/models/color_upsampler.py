@@ -5,11 +5,11 @@ import torch
 import torch.nn as nn
 
 from webcolor.data.dataset import MAX_NODE_SIZE
-from webcolor.models.base import BaseGenerator
+from webcolor.models.base import BaseUpsampler
 from webcolor.models.utils import PositionalEncoding, to_dense_batch
 
 
-class NARTransformer(BaseGenerator):  # type: ignore
+class ColorUpsampler(BaseUpsampler):  # type: ignore
     def __init__(
         self,
         d_model: int,
@@ -21,11 +21,11 @@ class NARTransformer(BaseGenerator):  # type: ignore
     ):
         super().__init__(
             d_model=d_model,
-            has_style_encoder=False,
             **kwargs,
         )
 
         # Transformer modules
+        self.fc_input = nn.Linear(d_model * 2, d_model)
         self.transformer = nn.TransformerEncoder(  # type: ignore
             nn.TransformerEncoderLayer(
                 d_model=d_model,
@@ -45,9 +45,11 @@ class NARTransformer(BaseGenerator):  # type: ignore
     ) -> Dict[str, torch.Tensor]:
         # encode
         x_con = self.encode_content(g)
+        x_sty = self.encode_style(**g.ndata)
 
         # make an input sequence for Transformer encoder
-        src = self.positional_encoding(to_dense_batch(x_con, batch_mask))
+        x = self.fc_input(torch.cat([x_con, x_sty], dim=-1))
+        src = self.positional_encoding(to_dense_batch(x, batch_mask))
 
         # make a causal mask for Transformer encoder
         src_key_padding_mask = ~batch_mask

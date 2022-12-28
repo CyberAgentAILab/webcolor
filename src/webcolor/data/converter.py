@@ -1,5 +1,5 @@
 from pathlib import Path
-from typing import Optional
+from typing import Optional, Tuple
 
 import numpy as np
 import torch
@@ -15,23 +15,31 @@ TAG_TO_IDX = dict((tag, idx) for idx, tag in enumerate(HTML_TAGS))
 IDX_TO_TAG = dict((idx, tag) for idx, tag in enumerate(HTML_TAGS))
 
 
-def discretize_to_eight_bins(x: int) -> int:
-    """Discretize a value from 0 to 255 into 8 bins and return the bin index."""
+def discretize_to_eight_bins(x: int) -> Tuple[int, float]:
+    """Discretize the value from 0 to 255 into 8 bins and return the bin index
+    and the residual."""
     min_value = 0
     max_value = 255
     bin_size = 32
     # bins = array([ 32,  64,  96, 128, 160, 192, 224, 256])
     bins = np.arange(min_value, max_value, bin_size) + bin_size
     idx = int(np.digitize(x, bins, right=False))
-    return idx
+
+    # compute the residual as a proportion in the bin
+    res = x % bin_size / (bin_size - 1)
+
+    return idx, res
 
 
-def convert_color(color_str: Optional[str]) -> torch.Tensor:
-    """Convert a color string into a feature vector consisting of RGB and alpha bin indices."""
-    # TODO: Convert for color upsampler.
+def convert_color(color_str: Optional[str]) -> Tuple[torch.Tensor, torch.Tensor]:
+    """Convert the color string into two feature vectors: one representing the
+    RGB and alpha bin indices and the other the color residuals."""
     if color_str is None:
-        return torch.zeros(DIM_COLOR, dtype=torch.long)
+        color_dis = torch.zeros(DIM_COLOR, dtype=torch.long)
+        color_res = torch.zeros(len("rgba"), dtype=torch.float)
+
     elif color_str.startswith("rgb"):
+        residuals = []
         start = color_str.find("(") + 1
         values = [eval(v) for v in color_str[start:-1].split(", ")]
         if color_str.startswith("rgb("):
@@ -41,18 +49,24 @@ def convert_color(color_str: Optional[str]) -> torch.Tensor:
         rgb = values[:3]
         octal = "0o"
         for x in rgb:
-            idx = discretize_to_eight_bins(x)
+            idx, res = discretize_to_eight_bins(x)
             octal += str(idx)
+            residuals.append(res)
         idx_rgb = eval(octal)
 
         # discretize alpha value
         alpha = values[3]
         assert 0.0 <= alpha <= 1.0
-        idx_alpha = discretize_to_eight_bins(round(alpha * 255))
+        idx_alpha, res = discretize_to_eight_bins(round(alpha * 255))
+        residuals.append(res)
 
-        return torch.tensor([idx_rgb, idx_alpha], dtype=torch.long)
+        color_dis = torch.tensor([idx_rgb, idx_alpha], dtype=torch.long)
+        color_res = torch.tensor(residuals, dtype=torch.float)
+
     else:
         raise NotImplementedError(color_str)
+
+    return color_dis, color_res
 
 
 def convert_order(sibling_order: int) -> torch.Tensor:

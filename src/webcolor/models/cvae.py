@@ -5,7 +5,7 @@ import torch
 import torch.nn as nn
 
 from webcolor.data.dataset import MAX_NODE_SIZE
-from webcolor.models.base_generator import BaseGenerator
+from webcolor.models.base import BaseGenerator
 from webcolor.models.utils import PositionalEncoding, to_dense_batch
 
 
