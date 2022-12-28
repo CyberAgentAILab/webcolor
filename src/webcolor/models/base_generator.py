@@ -42,6 +42,7 @@ class BaseGenerator(nn.Module):
         has_text: torch.Tensor,
         **kwargs: Any,
     ) -> torch.Tensor:
+        assert self.style_encoder, "This model does not have the style encoder."
         return self.style_encoder(text_color, bg_color, has_text)  # type: ignore
 
     def decode_style(self, x: torch.Tensor) -> Dict[str, torch.Tensor]:

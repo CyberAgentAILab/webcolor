@@ -34,6 +34,13 @@ class LitBaseGenerator(LightningModule):
     ) -> Dict[str, torch.Tensor]:
         return self.model(g, batch_mask)  # type: ignore
 
+    def generate(
+        self,
+        g: dgl.DGLGraph,
+        batch_mask: torch.Tensor,
+    ) -> Dict[str, torch.Tensor]:
+        return self.model.generate(g, batch_mask)  # type: ignore
+
     def training_step(self, batch: dgl.DGLGraph, batch_idx: int) -> torch.Tensor:
         return self._common_step(batch, batch_idx, "train")
 
@@ -188,6 +195,45 @@ class CVAE(LitBaseGenerator):
         self.coeff_kl = coeff_kl
         super().__init__(
             "CVAE",
+            model_cls(
+                d_model=d_model,
+                nhead=nhead,
+                num_layers=num_layers,
+                dim_feedforward=dim_feedforward,
+                norm_first=norm_first,
+                disable_message_passing=disable_message_passing,
+                disable_residual=disable_residual,
+            ),
+        )
+
+
+class NAR(LitBaseGenerator):
+    def __init__(
+        self,
+        d_model: int = 256,
+        nhead: int = 8,
+        num_layers: int = 4,
+        dim_feedforward: int = 512,
+        norm_first: bool = True,
+        disable_message_passing: bool = False,
+        disable_residual: bool = False,
+    ):
+        """
+        Non-autoregressive Transformer.
+
+        Args:
+            d_model: Base dimension size
+            nhead: Number of attention heads in the Transformer
+            num_layers: Number of encoder/decoder layers in the Transformer
+            dim_feedforward: Dimension of the feedforward network in the Transformer
+            norm_first: Perform the layer normalization on each layer before other operations
+            disable_message_passing: Disable message passing in the content encoder
+            disable_residual: Disable residual connection in the content encoder
+        """
+        from webcolor.models.nar import NARTransformer as model_cls
+
+        super().__init__(
+            "NAR",
             model_cls(
                 d_model=d_model,
                 nhead=nhead,
