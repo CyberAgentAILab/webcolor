@@ -42,10 +42,16 @@ class LitBaseGenerator(LightningModule):
         return self.model.generate(g, batch_mask)  # type: ignore
 
     def training_step(self, batch: dgl.DGLGraph, batch_idx: int) -> torch.Tensor:
-        return self._common_step(batch, batch_idx, "train")
+        if self.model_name != "Stats":
+            return self._common_step(batch, batch_idx, "train")
+        else:
+            g, batch_mask = self._prepare_batch(batch)
+            out: Dict[str, torch.Tensor] = self(g, batch_mask)
+            return out["dummy_loss"]
 
     def validation_step(self, batch: dgl.DGLGraph, batch_idx: int) -> None:
-        self._common_step(batch, batch_idx, "val")
+        if self.model_name != "Stats":
+            self._common_step(batch, batch_idx, "val")
 
     def _prepare_batch(self, batch: dgl.DGLGraph) -> Tuple[dgl.DGLGraph, torch.Tensor]:
         batch_mask = make_batch_mask(batch)
@@ -61,12 +67,12 @@ class LitBaseGenerator(LightningModule):
         out = self(g, batch_mask)
 
         # format prediction
-        key_to_logit_target = self._format_prediction(g, out)
+        key_to_pred_target = self._format_prediction(g, out)
 
         # compute loss
         loss_dict = {
             f"loss_{key}": F.cross_entropy(logit, target)
-            for key, (logit, target) in key_to_logit_target.items()
+            for key, (logit, target) in key_to_pred_target.items()
         }
         loss = sum(loss_dict.values())
 
@@ -85,7 +91,7 @@ class LitBaseGenerator(LightningModule):
                 num_classes=nb**3 if key == "rgb" else nb,
                 average="micro",
             )
-            for key, (logit, target) in key_to_logit_target.items()
+            for key, (logit, target) in key_to_pred_target.items()
         }
 
         # log values
@@ -101,21 +107,23 @@ class LitBaseGenerator(LightningModule):
     def _format_prediction(
         self, g: dgl.DGLGraph, out: Dict[str, torch.Tensor]
     ) -> Dict[str, Tuple[torch.Tensor, torch.Tensor]]:
+        prefix = "logit" if self.model_name != "Stats" else "pred"
+
         # compute text color only for elements having text
         text_mask = g.ndata["has_text"]
         text_color = g.ndata["text_color"][text_mask]
-        logit_text_rgb = out["logit_text_rgb"][text_mask]
-        logit_text_alpha = out["logit_text_alpha"][text_mask]
+        pred_text_rgb = out[f"{prefix}_text_rgb"][text_mask]
+        pred_text_alpha = out[f"{prefix}_text_alpha"][text_mask]
 
         # concatenate text and bg colors
-        logit_rgb = torch.cat([logit_text_rgb, out["logit_bg_rgb"]])
-        logit_alpha = torch.cat([logit_text_alpha, out["logit_bg_alpha"]])
+        pred_rgb = torch.cat([pred_text_rgb, out[f"{prefix}_bg_rgb"]])
+        pred_alpha = torch.cat([pred_text_alpha, out[f"{prefix}_bg_alpha"]])
         target_rgb = torch.cat([text_color[:, 0], g.ndata["bg_color"][:, 0]])
         target_alpha = torch.cat([text_color[:, 1], g.ndata["bg_color"][:, 1]])
 
         return {
-            "rgb": (logit_rgb, target_rgb),
-            "alpha": (logit_alpha, target_alpha),
+            "rgb": (pred_rgb, target_rgb),
+            "alpha": (pred_alpha, target_alpha),
         }
 
     def on_test_start(self) -> None:
@@ -151,12 +159,12 @@ class LitBaseGenerator(LightningModule):
         out = self.model.generate(g, batch_mask)
 
         # format prediction
-        key_to_logit_target = self._format_prediction(g, out)
+        key_to_pred_target = self._format_prediction(g, out)
 
         # update all metrics
         for metric_name, metric in self.test_metrics.items():
             key = metric_name.split("_")[-1]
-            metric.update(*key_to_logit_target[key])
+            metric.update(*key_to_pred_target[key])
 
     def on_test_end(self) -> None:
         # compute all metrics
@@ -244,3 +252,17 @@ class NAR(LitBaseGenerator):
                 disable_residual=disable_residual,
             ),
         )
+
+
+class Stats(LitBaseGenerator):
+    def __init__(self, sampling: bool = True):
+        """
+        Statistics-based coloring.
+
+        Args:
+            sampling: if ``True``, color is determined by frequency-weighted
+            sampling, otherwise by mode selection.
+        """
+        from webcolor.models.stats import Stats as model_cls
+
+        super().__init__("Stats", model_cls(sampling=sampling))

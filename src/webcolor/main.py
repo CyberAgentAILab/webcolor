@@ -10,11 +10,18 @@ from webcolor.lightning.generator import LitBaseGenerator
 from webcolor.lightning.upsampler import LitBaseUpsampler
 
 
-def cli_generator() -> None:
-    callbacks = [
-        ModelCheckpoint(filename="last", monitor="step", mode="max"),
-        ModelCheckpoint(filename="best", monitor="val/acc_rgb", mode="max"),
-    ]
+def cli_generator(subcommand: str, model_name: str) -> None:
+    model_ckpt_kwargs_list = []
+    if subcommand == "fit":
+        kwargs = dict(filename="last", monitor="step", mode="max")
+        model_ckpt_kwargs_list.append(kwargs)
+
+        if model_name != "Stats":
+            kwargs = dict(filename="best", monitor="val/acc_rgb", mode="max")
+            model_ckpt_kwargs_list.append(kwargs)
+
+    callbacks = [ModelCheckpoint(**kwargs) for kwargs in model_ckpt_kwargs_list]  # type: ignore
+
     LightningCLI(
         model_class=LitBaseGenerator,
         datamodule_class=WebColorDataModule,
@@ -23,11 +30,16 @@ def cli_generator() -> None:
     )
 
 
-def cli_upsampler() -> None:
-    callbacks = [
-        ModelCheckpoint(filename="last", monitor="step", mode="max"),
-        ModelCheckpoint(filename="best", monitor="val/upsampler_loss", mode="min"),
-    ]
+def cli_upsampler(subcommand: str) -> None:
+    model_ckpt_kwargs_list = []
+    if subcommand == "fit":
+        model_ckpt_kwargs_list += [
+            dict(filename="last", monitor="step", mode="max"),
+            dict(filename="best", monitor="val/upsampler_loss", mode="min"),
+        ]
+
+    callbacks = [ModelCheckpoint(**kwargs) for kwargs in model_ckpt_kwargs_list]  # type: ignore
+
     LightningCLI(
         model_class=LitBaseUpsampler,
         datamodule_class=WebColorDataModule,
@@ -43,7 +55,9 @@ if __name__ == "__main__":
     idx_model = sys.argv.index("--model") + 1
     assert idx_model < len(sys.argv), msg
 
-    if sys.argv[idx_model] in {"Upsampler"}:
-        cli_upsampler()
+    subcommand = sys.argv[1]
+    model_name = sys.argv[idx_model]
+    if model_name in {"Upsampler"}:
+        cli_upsampler(subcommand)
     else:
-        cli_generator()
+        cli_generator(subcommand, model_name)
