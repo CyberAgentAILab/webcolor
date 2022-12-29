@@ -17,8 +17,9 @@ from webcolor.data.converter import (
     convert_text,
 )
 
-DATASET_FILE = "webcolor_v1.0.hdf5"
-SPLIT_FILE = "webcolor_split_v1.0.json"
+VERSION = "v1.1"
+DATASET_FILE = f"webcolor_{VERSION}.hdf5"
+SPLIT_FILE = f"webcolor_split_{VERSION}.json"
 
 MAX_NODE_SIZE = 200
 
@@ -28,7 +29,6 @@ class WebColorDataset(DGLDataset):  # type: ignore
         assert split in ["train", "val", "test", "test1", "test2"]
         self.split = split
         self.data_dir = "data"
-        self.version = Path(DATASET_FILE).stem.split("_")[-1]
         super().__init__(name="webcolor")
 
     def process(self) -> None:
@@ -65,7 +65,7 @@ class WebColorDataset(DGLDataset):  # type: ignore
                     color, color_res = convert_color(nf.attrs.get("text_color"))
                     feat["text_color"].append(color)
                     feat["text_color_res"].append(color_res)
-                    color, color_res = convert_color(nf.attrs.get("background_color"))
+                    color, color_res = convert_color(nf.attrs["background_color"])
                     feat["bg_color"].append(color)
                     feat["bg_color_res"].append(color_res)
                     feat["order"].append(convert_order(nf.attrs["sibling_order"]))
@@ -94,7 +94,7 @@ class WebColorDataset(DGLDataset):  # type: ignore
         return data_ids
 
     def get_cache_path(self, split: str) -> str:
-        return f"{self.data_dir}/{split}_{self.version}.bin"
+        return f"{self.data_dir}/{split}_{VERSION}.bin"
 
     def save(self) -> None:
         """Save graphs to cache."""

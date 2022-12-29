@@ -1,6 +1,6 @@
 #!/bin/bash -eu
 
-version="v1.0"
+version="v1.1"
 
 function download {
     url=https://storage.googleapis.com/ailab-public/webcolor/dataset/${1}

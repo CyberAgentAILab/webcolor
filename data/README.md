@@ -8,13 +8,13 @@ TODO: write this, put figure
 ./download.sh {main,cache,text,image}
 ```
 
--   "main" (1.8 GB)
+-   "main" (1.5 GB)
 
     -   Main dataset
     -   Split file
     -   Note: Processing to DGL format takes about 50 minutes.
 
--   "cache" (607 MB, recommended)
+-   "cache" (693 MB, recommended)
 
     -   Processed DGL cache
     -   Split file
@@ -41,4 +41,5 @@ This dataset is based on the [Klarna Product Page Dataset](https://github.com/kl
 
 ## Versions
 
-1.0: v1 release (Dec XX, 2022)
+1.1: fix bug on text color (Dec 29, 2022)
+1.0: v1 release (Dec 23, 2022)
