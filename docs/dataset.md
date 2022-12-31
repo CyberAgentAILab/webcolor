@@ -51,9 +51,9 @@ Variable|Type|Description
 `parent_id`|int|Parent node ID (`-1` indicates no parent, *i.e.*, root)
 `node_attrs`|dict|Metadata corresponding to the node (element)
 
-Node attrs
+The contents of `node_attrs` are listed below.
 
-Key|Type|Description
+Key|Value type|Description
 ---|---|---
 "text_color"|str|Text color (computed value of the CSS property `color`, text elements only)
 "background_color"|str|Background color (computed value of the CSS property `background-color`)
