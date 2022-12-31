@@ -1,7 +1,82 @@
 # Generative Colorization of Structured Mobile Web Pages
 
+Official implementation of Generative Colorization of Structured Mobile Web Pages, WACV 2023.
+
+[ArXiv](https://arxiv.org/abs/2212.11541) | [Dataset](docs/dataset.md) | [Pre-trained models](docs/pretrained_models.md)
+
 <p align="center">
   <img src="assets/concept_image.png" width="600px"></img>
-</p
+</p>
 
-The code and dataset will be available by the time of WACV 2023.
+## Setup
+
+### Development environment
+
+-   Ubuntu 22.04, Python 3.10.9, Poetry 1.2.2
+-   CUDA 11.6, cuDNN 8.7.0
+-   PyTorch 1.12.1, PyTorch Lightning 1.8.6, Deep Graph Library 0.9.1
+-   Google Chrome 108.0.5359.124, ChromeDriver 108.0.5359.71
+
+### Installation
+
+```bash
+git clone https://github.com/CyberAgentAILab/webcolor.git
+poetry install
+```
+
+Note that we cannot guarantee or support operation in other environments, such
+as Windows. If you wish to install PyTorch or DGL for other CUDA versions,
+please edit URLs in [pyproject.toml](pyproject.toml). You can find the commands
+to install Chrome and ChromeDriver on Ubuntu [here](docs/install_chrome.md).
+
+## Data preparation
+
+```bash
+./data/download.sh cache
+```
+
+For details on the dataset, please see [this document](docs/dataset.md).
+
+## Training
+
+```bash
+MODEL_NAME=CVAE  # {CVAE,NAR,Stats,Upsampler}
+poetry run python -m webcolor.main fit --model $MODEL_NAME --trainer.accelerator gpu --trainer.devices 1
+```
+
+Model hyperparameters can be listed with `--model.help $MODEL_NAME`.
+
+## Evaluation
+
+```bash
+MODEL_NAME=CVAE  # {CVAE,NAR,Stats,Upsampler}
+CKPT_PATH=https://storage.googleapis.com/ailab-public/webcolor/checkpoints/${MODEL_NAME}.ckpt  # Evaluate the pre-trained model
+# CKPT_PATH=lightning_logs/version_0/checkpoints/best.ckpt  # Evaluate your own trained model
+poetry run python -m webcolor.main test --model $MODEL_NAME --ckpt_path $CKPT_PATH --trainer.default_root_dir /tmp --trainer.accelerator gpu --trainer.devices 1
+```
+
+For details on the pre-trained models, please see [this document](docs/pretrained_models.md).
+
+## Licence
+
+The code is licensed under Apache-2.0 and the dataset is licensed under CC BY-NC-SA 4.0.
+
+## Citation
+
+```bibtex
+@inproceedings{Kikuchi2023,
+    title = {Generative Colorization of Structured Mobile Web Pages},
+    author = {Kotaro Kikuchi and Naoto Inoue and Mayu Otani and Edgar Simo-Serra and Kota Yamaguchi},
+    booktitle={2023 IEEE/CVF Winter Conference on Applications of Computer Vision (WACV)},
+    year = {2023},
+    pages = {},
+    doi = {}
+}
+```
+
+## Todo
+
+- demo with visualization
+- add TensorBoard.dev
+- add autoregressive model
+- add Frechet Color Distance, contrast violation

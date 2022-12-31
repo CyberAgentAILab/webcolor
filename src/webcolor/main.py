@@ -1,5 +1,6 @@
 import sys
 
+import torch.hub
 from pytorch_lightning.callbacks import ModelCheckpoint
 from pytorch_lightning.cli import LightningCLI
 
@@ -8,6 +9,9 @@ import webcolor.lightning.upsampler  # noqa: F401
 from webcolor.lightning.datamodule import WebColorDataModule
 from webcolor.lightning.generator import LitBaseGenerator
 from webcolor.lightning.upsampler import LitBaseUpsampler
+
+# To save downloaded ckpt files under `checkpoints`.
+torch.hub.set_dir(".")  # type: ignore
 
 
 def cli_generator(subcommand: str, model_name: str) -> None:

@@ -1,11 +1,12 @@
 #!/bin/bash -eu
 
 version="v1.1"
+data_dir=`dirname $0`
 
 function download {
     url=https://storage.googleapis.com/ailab-public/webcolor/dataset/${1}
     echo -n downloading ${1##*/} from ${url} ...
-    wget ${url} -q || wget ${url}
+    wget ${url} -q -P $data_dir || wget ${url}
     echo " done"
 }
 
