@@ -154,6 +154,9 @@ class LitBaseGenerator(LightningModule):
 
         # TODO: Frechet Color Distance, Contrast violation
 
+        for metric_name, metric in self.test_metrics.items():
+            self.test_metrics[metric_name] = metric.to(self.device)  # type: ignore
+
     def test_step(self, batch: dgl.DGLGraph, batch_idx: int) -> None:
         g, batch_mask = self._prepare_batch(batch)
         out = self.model.generate(g, batch_mask)
