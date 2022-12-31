@@ -73,10 +73,3 @@ The code is licensed under Apache-2.0 and the dataset is licensed under CC BY-NC
     doi = {}
 }
 ```
-
-## Todo
-
-- demo with visualization
-- add TensorBoard.dev
-- add autoregressive model
-- add Frechet Color Distance, contrast violation
