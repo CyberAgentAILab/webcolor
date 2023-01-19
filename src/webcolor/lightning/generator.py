@@ -107,7 +107,7 @@ class LitBaseGenerator(LightningModule):
     def _format_prediction(
         self, g: dgl.DGLGraph, out: Dict[str, torch.Tensor]
     ) -> Dict[str, Tuple[torch.Tensor, torch.Tensor]]:
-        prefix = "logit" if self.model_name != "Stats" else "pred"
+        prefix = "logit" if "logit_text_rgb" in out else "pred"
 
         # compute text color only for elements having text
         text_mask = g.ndata["has_text"]
@@ -172,7 +172,8 @@ class LitBaseGenerator(LightningModule):
     def on_test_end(self) -> None:
         # compute all metrics
         for metric_name, metric in self.test_metrics.items():
-            print(metric_name, metric.compute().item())
+            score = metric.compute().item()
+            print(f"{metric_name} {score:.3f}")
             metric.reset()
 
 

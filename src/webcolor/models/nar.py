@@ -68,5 +68,13 @@ class NARTransformer(BaseGenerator):  # type: ignore
         g: dgl.DGLGraph,
         batch_mask: torch.Tensor,
     ) -> Dict[str, torch.Tensor]:
-        out: Dict[str, torch.Tensor] = self(g, batch_mask)
+        # compute logit
+        key_to_logit = self(g, batch_mask)
+
+        # convert logit to prediction
+        out = {
+            key.replace("logit", "pred"): logit.argmax(-1)
+            for key, logit in key_to_logit.items()
+        }
+
         return out

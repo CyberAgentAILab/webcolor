@@ -78,7 +78,13 @@ class CVAE(BaseGenerator):  # type: ignore
 
         # decode
         x = self.decode(x_con, z, batch_mask)
-        out: Dict[str, torch.Tensor] = self.decode_style(x)
+        key_to_logit = self.decode_style(x)
+
+        # convert logit to prediction
+        out = {
+            key.replace("logit", "pred"): logit.argmax(-1)
+            for key, logit in key_to_logit.items()
+        }
 
         return out
 
