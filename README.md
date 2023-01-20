@@ -57,19 +57,19 @@ poetry run python -m webcolor.main test --model $MODEL_NAME --ckpt_path $CKPT_PA
 
 For details on the pre-trained models, please see [this document](docs/pretrained_models.md).
 
-## Licence
-
-The code is licensed under Apache-2.0 and the dataset is licensed under CC BY-NC-SA 4.0.
-
 ## Citation
 
 ```bibtex
 @inproceedings{Kikuchi2023,
     title = {Generative Colorization of Structured Mobile Web Pages},
     author = {Kotaro Kikuchi and Naoto Inoue and Mayu Otani and Edgar Simo-Serra and Kota Yamaguchi},
-    booktitle={2023 IEEE/CVF Winter Conference on Applications of Computer Vision (WACV)},
+    booktitle = {IEEE/CVF Winter Conference on Applications of Computer Vision (WACV)},
     year = {2023},
-    pages = {},
+    pages = {3650-3659},
     doi = {}
 }
 ```
+
+## Licence
+
+The code is licensed under Apache-2.0 and the dataset is licensed under CC BY-NC-SA 4.0.
