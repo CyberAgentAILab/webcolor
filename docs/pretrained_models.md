@@ -3,7 +3,9 @@
 The following table summarizes the performance of the pre-trained models and the
 URLs of checkpoints and configurations. The scores are slightly different from
 the paper due to refactoring of the code, but the trends are generally the same.
-We set `--seed_everything 0` for both training and evaluation.
+We set `--seed_everything 0` for both training and evaluation. The training logs
+can be found at
+[TensorBoard.dev](https://tensorboard.dev/experiment/FQPauprTR5Clxgp6kdjNLQ/).
 
 Name|Accuracy (RGB)|Accuracy (Alpha)|F-score (RGB)|F-score (Alpha)|URL|Note
 ---|---|---|---|---|---|---
