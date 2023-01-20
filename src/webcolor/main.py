@@ -54,9 +54,12 @@ def cli_upsampler(subcommand: str) -> None:
 
 if __name__ == "__main__":
     msg = "The argument ``--model MODEL_NAME`` is required."
-    assert "--model" in sys.argv, msg
+    assert "--model" in sys.argv or "--model.help" in sys.argv, msg
 
-    idx_model = sys.argv.index("--model") + 1
+    if "--model" in sys.argv:
+        idx_model = sys.argv.index("--model") + 1
+    else:
+        idx_model = sys.argv.index("--model.help") + 1
     assert idx_model < len(sys.argv), msg
 
     subcommand = sys.argv[1]
