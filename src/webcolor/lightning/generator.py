@@ -258,6 +258,51 @@ class NAR(LitBaseGenerator):
         )
 
 
+class AR(LitBaseGenerator):
+    def __init__(
+        self,
+        d_model: int = 256,
+        nhead: int = 8,
+        num_layers: int = 4,
+        dim_feedforward: int = 512,
+        norm_first: bool = True,
+        top_k: int = 0,
+        top_p: float = 0.0,
+        disable_message_passing: bool = False,
+        disable_residual: bool = False,
+    ):
+        """
+        Autoregressive Transformer.
+
+        Args:
+            d_model: Base dimension size
+            nhead: Number of attention heads in the Transformer
+            num_layers: Number of encoder/decoder layers in the Transformer
+            dim_feedforward: Dimension of the feedforward network in the Transformer
+            norm_first: Perform the layer normalization on each layer before other operations
+            top_k: Keep only `top_k` tokens with highest probability (top-k filtering)
+            top_p: Keep the top tokens with cumulative probability >= `top_p` (nucleus filtering)
+            disable_message_passing: Disable message passing in the content encoder
+            disable_residual: Disable residual connection in the content encoder
+        """
+        from webcolor.models.ar import ARTransformer as model_cls
+
+        super().__init__(
+            "AR",
+            model_cls(
+                d_model=d_model,
+                nhead=nhead,
+                num_layers=num_layers,
+                dim_feedforward=dim_feedforward,
+                norm_first=norm_first,
+                top_k=top_k,
+                top_p=top_p,
+                disable_message_passing=disable_message_passing,
+                disable_residual=disable_residual,
+            ),
+        )
+
+
 class Stats(LitBaseGenerator):
     def __init__(self, sampling: bool = True):
         """

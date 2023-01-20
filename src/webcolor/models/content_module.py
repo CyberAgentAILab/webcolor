@@ -92,6 +92,8 @@ class ContentEncoder(nn.Module):
         if not self.disable_residual:
             x += h
 
+        del g.ndata["h"], g.ndata["u"]
+
         return x  # type: ignore
 
     def nfunc_up(self, nodes: dgl.udf.NodeBatch) -> dict:

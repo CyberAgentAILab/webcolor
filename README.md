@@ -40,7 +40,7 @@ For details on the dataset, please see [this document](docs/dataset.md).
 ## Training
 
 ```bash
-MODEL_NAME=CVAE  # {CVAE,NAR,Stats,Upsampler}
+MODEL_NAME=CVAE  # {CVAE,NAR,AR,Stats,Upsampler}
 poetry run python -m webcolor.main fit --model $MODEL_NAME --trainer.accelerator gpu --trainer.devices 1
 ```
 
@@ -49,7 +49,7 @@ Model hyperparameters can be listed with `--model.help $MODEL_NAME`.
 ## Evaluation
 
 ```bash
-MODEL_NAME=CVAE  # {CVAE,NAR,Stats,Upsampler}
+MODEL_NAME=CVAE  # {CVAE,NAR,AR,Stats,Upsampler}
 CKPT_PATH=https://storage.googleapis.com/ailab-public/webcolor/checkpoints/${MODEL_NAME}.ckpt  # Evaluate the pre-trained model
 # CKPT_PATH=lightning_logs/version_0/checkpoints/best.ckpt  # Evaluate your own trained model
 poetry run python -m webcolor.main test --model $MODEL_NAME --ckpt_path $CKPT_PATH --trainer.default_root_dir /tmp --trainer.accelerator gpu --trainer.devices 1
