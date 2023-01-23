@@ -37,6 +37,21 @@ to install Chrome and ChromeDriver on Ubuntu [here](docs/install_chrome.md).
 
 For details on the dataset, please see [this document](docs/dataset.md).
 
+## Colorization demo
+
+```bash
+MODEL_NAME=CVAE  # {CVAE,NAR,AR,Stats}
+BASE_URL=https://storage.googleapis.com/ailab-public/webcolor/checkpoints
+poetry run python demo.py --model $MODEL_NAME --ckpt_path ${BASE_URL}/${MODEL_NAME}.ckpt --upsampler_path ${BASE_URL}/Upsampler.ckpt --target random --out_path output/screenshot.png --num_save 3 --save_gt
+```
+
+The above command performs automatic colorization using pre-trained models and
+produces screenshots like the following.
+
+|CVAE #1|CVAE #2|CVAE #3|Real|
+|:---:|:---:|:---:|:---:|
+|<img src="assets/test_GB_www.warehouse.co.uk_12679.png" width="150px"></img>|<img src="assets/test_GB_www.warehouse.co.uk_12679_0.png" width="150px"></img>|<img src="assets/test_GB_www.warehouse.co.uk_12679_1.png" width="150px"></img>|<img src="assets/test_GB_www.warehouse.co.uk_12679_gt.png" width="150px"></img>|
+
 ## Training
 
 ```bash

@@ -45,7 +45,7 @@ class LitBaseGenerator(LightningModule):
         if self.model_name != "Stats":
             return self._common_step(batch, batch_idx, "train")
         else:
-            g, batch_mask = self._prepare_batch(batch)
+            g, batch_mask = self.prepare_batch(batch)
             out: Dict[str, torch.Tensor] = self(g, batch_mask)
             return out["dummy_loss"]
 
@@ -53,7 +53,7 @@ class LitBaseGenerator(LightningModule):
         if self.model_name != "Stats":
             self._common_step(batch, batch_idx, "val")
 
-    def _prepare_batch(self, batch: dgl.DGLGraph) -> Tuple[dgl.DGLGraph, torch.Tensor]:
+    def prepare_batch(self, batch: dgl.DGLGraph) -> Tuple[dgl.DGLGraph, torch.Tensor]:
         batch_mask = make_batch_mask(batch)
         return batch, batch_mask
 
@@ -63,7 +63,7 @@ class LitBaseGenerator(LightningModule):
         batch_idx: int,
         stage: str,
     ) -> torch.Tensor:
-        g, batch_mask = self._prepare_batch(batch)
+        g, batch_mask = self.prepare_batch(batch)
         out = self(g, batch_mask)
 
         # format prediction
@@ -158,7 +158,7 @@ class LitBaseGenerator(LightningModule):
             self.test_metrics[metric_name] = metric.to(self.device)  # type: ignore
 
     def test_step(self, batch: dgl.DGLGraph, batch_idx: int) -> None:
-        g, batch_mask = self._prepare_batch(batch)
+        g, batch_mask = self.prepare_batch(batch)
         out = self.model.generate(g, batch_mask)
 
         # format prediction

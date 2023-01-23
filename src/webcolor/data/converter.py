@@ -69,6 +69,25 @@ def convert_color(color_str: Optional[str]) -> Tuple[torch.Tensor, torch.Tensor]
     return color_dis, color_res
 
 
+def revert_color(color_dis: torch.Tensor, color_res: torch.Tensor) -> str:
+    """Revert the two feature vectors to a color string in RGBA format."""
+    min_value = 0
+    max_value = 255
+    bin_size = 32
+    # bins = tensor([  0,  32,  64,  96, 128, 160, 192, 224])
+    bins = torch.arange(min_value, max_value, bin_size)
+
+    idx_rgb, idx_a = color_dis.tolist()
+    idx_r, idx_g, idx_b = [int(i) for i in format(idx_rgb, "03o")]
+    rgba = bins[[idx_r, idx_g, idx_b, idx_a]] + (bin_size - 1) * color_res.cpu()
+    rgb = rgba[:3].long().tolist()
+    alpha = round(rgba[3].item() / max_value, 4)
+
+    color_str = f"rgba{tuple(rgb) + (alpha,)}"
+
+    return color_str
+
+
 def convert_order(sibling_order: int) -> torch.Tensor:
     """Convert a sibling order to a tensor."""
     return torch.tensor(sibling_order, dtype=torch.long)

@@ -45,7 +45,7 @@ class LitBaseUpsampler(LightningModule):
     def test_step(self, batch: dgl.DGLGraph, batch_idx: int) -> None:
         self._common_step(batch, batch_idx, "test")
 
-    def _prepare_batch(self, batch: dgl.DGLGraph) -> Tuple[dgl.DGLGraph, torch.Tensor]:
+    def prepare_batch(self, batch: dgl.DGLGraph) -> Tuple[dgl.DGLGraph, torch.Tensor]:
         batch_mask = make_batch_mask(batch)
         return batch, batch_mask
 
@@ -55,7 +55,7 @@ class LitBaseUpsampler(LightningModule):
         batch_idx: int,
         stage: str,
     ) -> torch.Tensor:
-        g, batch_mask = self._prepare_batch(batch)
+        g, batch_mask = self.prepare_batch(batch)
         out = self(g, batch_mask)
 
         # format prediction

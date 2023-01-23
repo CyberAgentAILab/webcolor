@@ -1,5 +1,5 @@
-from typing import Any, Dict, List
 from collections import defaultdict
+from typing import Any, Dict, List
 
 import dgl
 import torch
