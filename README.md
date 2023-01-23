@@ -50,7 +50,7 @@ produces screenshots like the following.
 
 |CVAE #1|CVAE #2|CVAE #3|Real|
 |:---:|:---:|:---:|:---:|
-|<img src="assets/test_GB_www.warehouse.co.uk_12679.png" width="150px"></img>|<img src="assets/test_GB_www.warehouse.co.uk_12679_0.png" width="150px"></img>|<img src="assets/test_GB_www.warehouse.co.uk_12679_1.png" width="150px"></img>|<img src="assets/test_GB_www.warehouse.co.uk_12679_gt.png" width="150px"></img>|
+|![](assets/test_GB_www.warehouse.co.uk_12679.png)|![](assets/test_GB_www.warehouse.co.uk_12679_0.png)|![](assets/test_GB_www.warehouse.co.uk_12679_1.png)|![](assets/test_GB_www.warehouse.co.uk_12679_gt.png)|
 
 ## Training
 

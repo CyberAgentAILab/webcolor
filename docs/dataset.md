@@ -1,7 +1,11 @@
 # WebColor dataset
 
 A dataset for web page coloring task consisting of e-commerce mobile web pages,
-adapted from the [Klarna Product Page Dataset](https://github.com/klarna/product-page-dataset). (todo: put figure)
+adapted from the [Klarna Product Page Dataset](https://github.com/klarna/product-page-dataset).
+
+Training examples|Data structure
+:---:|:---:
+<img src="../assets/training_examples.png" width="600px"></img>|<img src="../assets/data_structure.png" width="480px"></img>
 
 ## Download dataset
 
@@ -63,7 +67,8 @@ Key|Value type|Description
 "img_feat"|numpy.ndarray<br>(dtype=float32,<br>shape=(13,))|Low-level features of image (image elements only)
 "bgimg_feat"|numpy.ndarray<br>(dtype=float32,<br>shape=(12,))|Low-level features of background image (only for elements with a background image)
 
-Details of the text and image features can be found in the [supplemental material](https://arxiv.org/abs/2212.11541).
+Details of the text and image features can be found in the [supplemental
+material](https://arxiv.org/abs/2212.11541).
 
 ## Data split
 
@@ -75,7 +80,9 @@ Test: 13,228 pages
 
 ## License
 
-This dataset is based on the [Klarna Product Page Dataset](https://github.com/klarna/product-page-dataset) and is licensed under [CC BY-NC-SA 4.0](http://creativecommons.org/licenses/by-nc-sa/4.0/).
+This dataset is based on the [Klarna Product Page
+Dataset](https://github.com/klarna/product-page-dataset) and is licensed under
+[CC BY-NC-SA 4.0](http://creativecommons.org/licenses/by-nc-sa/4.0/).
 
 ## Versions
 

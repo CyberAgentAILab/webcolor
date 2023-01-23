@@ -1,5 +1,7 @@
 # Pre-trained models
 
+<img src="../assets/model_overview.png"></img>
+
 The following table summarizes the performance of the pre-trained models and the
 URLs of checkpoints and configurations. The scores are slightly different from
 the paper due to refactoring of the code, but the trends are generally the same.
