@@ -1,5 +1,5 @@
-import random
 import argparse
+import random
 from pathlib import Path
 from typing import Tuple
 
@@ -8,9 +8,9 @@ import torch.hub
 from pytorch_lightning import seed_everything
 
 import webcolor.lightning.generator as lit_generator
+from webcolor.data.dataset import WebColorDataset
 from webcolor.lightning.generator import LitBaseGenerator
 from webcolor.lightning.upsampler import Upsampler
-from webcolor.data.dataset import WebColorDataset
 from webcolor.visualize import save_image
 
 # To save downloaded ckpt files under `checkpoints`.

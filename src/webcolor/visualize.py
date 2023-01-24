@@ -1,16 +1,15 @@
+import subprocess
+import tempfile
 import zipfile
 from io import BytesIO
-import requests
-import tempfile
-import subprocess
 from pathlib import Path
 from typing import List, Union
 
 import dgl
+import requests
 import torch
 
 from webcolor.data.converter import revert_color
-
 
 BASE_URL = "https://storage.googleapis.com/ailab-public/webcolor/dataset/processed/"
 UA = "Mozilla/5.0 (iPhone; CPU iPhone OS 11_0 like Mac OS X) AppleWebKit/604.1.38 (KHTML, like Gecko) Version/11.0 Mobile/15A372 Safari/604.1"
