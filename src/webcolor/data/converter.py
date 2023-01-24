@@ -100,8 +100,8 @@ def convert_tag(html_tag: str) -> torch.Tensor:
 
 
 def convert_text(text_feat: Optional[np.ndarray]) -> torch.Tensor:
-    """Convert the input text feature to a tensor or return an all-zeros tensor if None."""
-    # TODO: Put the actual conversion process somewhere.
+    """Convert the input text feature to a tensor or return an all-zeros tensor if None.
+    The actual conversion process can be found in `converter_reference.py`."""
     if text_feat is None:
         return torch.zeros(DIM_TEXT, dtype=torch.float)
     else:
@@ -109,8 +109,8 @@ def convert_text(text_feat: Optional[np.ndarray]) -> torch.Tensor:
 
 
 def convert_image(img_feat: Optional[np.ndarray]) -> torch.Tensor:
-    """Convert the input image feature to a tensor or return an all-zeros tensor if None."""
-    # TODO: Put the actual conversion process somewhere.
+    """Convert the input image feature to a tensor or return an all-zeros tensor if None.
+    The actual conversion process can be found in `converter_reference.py`."""
     if img_feat is None:
         return torch.zeros(DIM_IMAGE, dtype=torch.float)
     else:

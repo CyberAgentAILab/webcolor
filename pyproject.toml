@@ -13,6 +13,10 @@ dgl-cu116 = {url = "https://data.dgl.ai/wheels/dgl_cu116-0.9.1-cp310-cp310-manyl
 h5py = "^3.7.0"
 pytorch-lightning = {version = "^1.8.6", extras = ["extra"]}
 tensorboard = "^2.11.0"
+cairosvg = {version = "^2.6.0", optional = true}
+
+[tool.poetry.extras]
+image = ["cairosvg"]
 
 [tool.poetry.group.dev]
 optional = true
