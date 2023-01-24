@@ -29,6 +29,7 @@ class WebColorDataset(DGLDataset):  # type: ignore
         assert split in ["train", "val", "test", "test1", "test2"]
         self.split = split
         self.data_dir = "data"
+        self.len_test1 = -1
         super().__init__(name="webcolor")
 
     def process(self) -> None:
@@ -102,6 +103,7 @@ class WebColorDataset(DGLDataset):  # type: ignore
             len_test1 = len(self.get_data_ids("test1"))
             save_graphs(self.get_cache_path("test1"), self.graphs[:len_test1])
             save_graphs(self.get_cache_path("test2"), self.graphs[len_test1:])
+            self.len_test1 = len_test1
         else:
             save_graphs(self.get_cache_path(self.split), self.graphs)
 
@@ -118,6 +120,7 @@ class WebColorDataset(DGLDataset):  # type: ignore
         """Load graphs from cache."""
         if self.split == "test":
             self.graphs = load_graphs(self.get_cache_path("test1"))[0]
+            self.len_test1 = len(self.graphs)
             self.graphs += load_graphs(self.get_cache_path("test2"))[0]
         else:
             self.graphs = load_graphs(self.get_cache_path(self.split))[0]
@@ -132,4 +135,7 @@ class WebColorDataset(DGLDataset):  # type: ignore
         g = self.graphs[i]
         # cast uint8 to bool (DGL bug when loading cache?)
         g.ndata["has_text"] = g.ndata["has_text"].bool()
-        return g
+        if self.split != "test":
+            return g
+        else:
+            return g, i < self.len_test1

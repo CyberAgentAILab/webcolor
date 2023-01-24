@@ -64,7 +64,7 @@ def load_data(args: argparse.Namespace) -> Tuple[dgl.DGLGraph, str]:
     else:
         idx = dataset.data_ids.index(args.target)
 
-    batch = dgl.batch([dataset[idx]] * args.num_save)
+    batch = dgl.batch([dataset[idx][0]] * args.num_save)
     data_id = dataset.data_ids[idx]
     print(f'Target: {{ index: {idx}, data_id: "{data_id}" }}')
 

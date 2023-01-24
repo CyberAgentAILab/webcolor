@@ -9,8 +9,9 @@ from torchmetrics.classification import MulticlassAccuracy, MulticlassF1Score
 from torchmetrics.functional.classification import multiclass_accuracy
 
 from webcolor.data.converter import NUM_COLOR_BINS
+from webcolor.metrics import FrechetColorDistance
 from webcolor.models.base import BaseGenerator
-from webcolor.models.utils import make_batch_mask
+from webcolor.models.utils import make_batch_mask, to_dense_batch
 
 
 class LitBaseGenerator(LightningModule):
@@ -128,53 +129,79 @@ class LitBaseGenerator(LightningModule):
 
     def on_test_start(self) -> None:
         nb = NUM_COLOR_BINS
-        keys = ["rgb", "alpha"]
+        m = self.test_metrics
 
         # Accuracy
-        self.test_metrics.update(
-            {
-                f"acc_{key}": MulticlassAccuracy(
-                    num_classes=nb**3 if key == "rgb" else nb,
-                    average="micro",
-                )
-                for key in keys
-            }
-        )
+        m["acc_rgb"] = MulticlassAccuracy(num_classes=nb**3, average="micro")
+        m["acc_alpha"] = MulticlassAccuracy(num_classes=nb, average="micro")
 
         # Macro F-score
-        self.test_metrics.update(
-            {
-                f"f1_{key}": MulticlassF1Score(
-                    num_classes=nb**3 if key == "rgb" else nb,
-                    average="macro",
-                )
-                for key in keys
-            }
-        )
+        m["f1_rgb"] = MulticlassF1Score(num_classes=nb**3, average="macro")
+        m["f1_alpha"] = MulticlassF1Score(num_classes=nb, average="macro")
 
-        # TODO: Frechet Color Distance, Contrast violation
+        # Frechet Color Distance
+        m["fcd_bg"] = FrechetColorDistance()
+        m["fcd_text"] = FrechetColorDistance()
+
+        # TODO: Contrast violation
 
         for metric_name, metric in self.test_metrics.items():
             self.test_metrics[metric_name] = metric.to(self.device)  # type: ignore
 
-    def test_step(self, batch: dgl.DGLGraph, batch_idx: int) -> None:
-        g, batch_mask = self.prepare_batch(batch)
+    def test_step(
+        self, batch: Tuple[dgl.DGLGraph, torch.Tensor], batch_idx: int
+    ) -> None:
+        g, batch_mask = self.prepare_batch(batch[0])
         out = self.model.generate(g, batch_mask)
 
-        # format prediction
+        # update accuracies and F-scores
         key_to_pred_target = self._format_prediction(g, out)
-
-        # update all metrics
         for metric_name, metric in self.test_metrics.items():
-            key = metric_name.split("_")[-1]
-            metric.update(*key_to_pred_target[key])
+            if metric_name.startswith("acc") or metric_name.startswith("f1"):
+                key = metric_name.split("_")[-1]
+                metric.update(*key_to_pred_target[key])
+
+        # update Frechet Color Distance
+        mask_real = batch[1]
+        m = self.test_metrics
+        _out = self._format_prediction_for_fcd(g, out, batch_mask)
+        m["fcd_bg"].update(_out["bg_real"][mask_real], real=True)
+        m["fcd_bg"].update(_out["bg_pred"][~mask_real], real=False)
+        m["fcd_text"].update(_out["text_real"][mask_real], real=True)
+        m["fcd_text"].update(_out["text_pred"][~mask_real], real=False)
 
     def on_test_end(self) -> None:
         # compute all metrics
         for metric_name, metric in self.test_metrics.items():
             score = metric.compute().item()
-            print(f"{metric_name} {score:.3f}")
+            if metric_name.startswith("fcd"):
+                print(f"{metric_name} {score*1e3:.3f} x 1e-3")
+            else:
+                print(f"{metric_name} {score:.3f}")
             metric.reset()
+
+    def _format_prediction_for_fcd(
+        self,
+        g: dgl.DGLGraph,
+        out: Dict[str, torch.Tensor],
+        batch_mask: torch.Tensor,
+        ignore_idx: int = -1,
+    ) -> Dict[str, torch.Tensor]:
+        bg_real = to_dense_batch(g.ndata["bg_color"][:, 0], batch_mask, ignore_idx)
+        bg_pred = to_dense_batch(out["pred_bg_rgb"], batch_mask, ignore_idx)
+
+        has_text = to_dense_batch(g.ndata["has_text"], batch_mask)
+        text_real = to_dense_batch(g.ndata["text_color"][:, 0], batch_mask, ignore_idx)
+        text_real[~has_text] = ignore_idx
+        text_pred = to_dense_batch(out["pred_text_rgb"], batch_mask, ignore_idx)
+        text_pred[~has_text] = ignore_idx
+
+        return {
+            "bg_real": bg_real,
+            "bg_pred": bg_pred,
+            "text_real": text_real,
+            "text_pred": text_pred,
+        }
 
 
 class CVAE(LitBaseGenerator):
