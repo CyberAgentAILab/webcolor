@@ -28,6 +28,12 @@ def main() -> None:
     batch, data_id = load_data(args)
     generator, upsampler = load_models(args)
 
+    # load to device
+    device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+    batch = batch.to(device)
+    generator = generator.to(device)
+    upsampler = upsampler.to(device)
+
     # prepare for inference
     seed_everything(args.seed)
     g, batch_mask = generator.prepare_batch(batch)
