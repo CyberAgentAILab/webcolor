@@ -1,4 +1,4 @@
-from typing import Any, Dict
+from typing import Any, Dict, Optional
 
 import dgl
 import torch
@@ -25,6 +25,8 @@ class BaseModel(nn.Module):
             disable_message_passing=disable_message_passing,
             disable_residual=disable_residual,
         )
+
+        self.style_encoder: Optional[StyleEncoder]
         if has_style_encoder:
             self.style_encoder = StyleEncoder(d_model)
         else:
