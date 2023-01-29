@@ -110,11 +110,16 @@ def load_models(args: argparse.Namespace) -> Tuple[LitBaseGenerator, Upsampler]:
     else:
         generator = _cls.load_from_checkpoint(args.ckpt_path)
     upsampler = Upsampler.load_from_checkpoint(args.upsampler_path)
-    generator, upsampler = generator.eval(), upsampler.eval()
+    generator, upsampler = generator.eval(), upsampler.eval()  # type: ignore
     return generator, upsampler
 
 
-def generate_color_style(g, batch_mask, generator, upsampler) -> dgl.DGLGraph:
+def generate_color_style(
+    g: dgl.DGLGraph,
+    batch_mask: torch.Tensor,
+    generator: LitBaseGenerator,
+    upsampler: Upsampler,
+) -> dgl.DGLGraph:
     g, h = g.clone(), g.clone()
 
     # generator
@@ -134,7 +139,7 @@ def generate_color_style(g, batch_mask, generator, upsampler) -> dgl.DGLGraph:
     return h
 
 
-def add_lighthouse_result(result: dict):
+def add_lighthouse_result(result: dict) -> dict:
     result["lighthouse"] = ContrastViolation.get_lighthouse_result(result["html_path"])
     return result
 

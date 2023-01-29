@@ -86,7 +86,7 @@ def load_models(args: argparse.Namespace) -> Tuple[LitBaseGenerator, Upsampler]:
     else:
         generator = _cls.load_from_checkpoint(args.ckpt_path)
     upsampler = Upsampler.load_from_checkpoint(args.upsampler_path)
-    generator, upsampler = generator.eval(), upsampler.eval()
+    generator, upsampler = generator.eval(), upsampler.eval()  # type: ignore
     return generator, upsampler
 
 

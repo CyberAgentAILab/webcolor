@@ -48,7 +48,7 @@ py_version = "py38"
 isort_known_first_party = ["webcolor"]
 
 [[tool.pysen.lint.mypy_targets]]
-paths = ["src"]
+paths = ["src", "demo.py", "eval.py"]
 
 [tool.pysen.lint.source]
 excludes = [".venv"]
