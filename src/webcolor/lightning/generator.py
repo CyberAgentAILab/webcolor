@@ -143,8 +143,6 @@ class LitBaseGenerator(LightningModule):
         m["fcd_bg"] = FrechetColorDistance()
         m["fcd_text"] = FrechetColorDistance()
 
-        # TODO: Contrast violation
-
         for metric_name, metric in self.test_metrics.items():
             self.test_metrics[metric_name] = metric.to(self.device)  # type: ignore
 

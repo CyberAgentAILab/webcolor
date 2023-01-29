@@ -11,7 +11,7 @@ import webcolor.lightning.generator as lit_generator
 from webcolor.data.dataset import WebColorDataset
 from webcolor.lightning.generator import LitBaseGenerator
 from webcolor.lightning.upsampler import Upsampler
-from webcolor.visualize import save_image
+from webcolor.utils import save_image
 
 # To save downloaded ckpt files under `checkpoints`.
 torch.hub.set_dir(".")  # type: ignore
