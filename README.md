@@ -1,6 +1,6 @@
 # Generative Colorization of Structured Mobile Web Pages
 
-Official reimplementation of Generative Colorization of Structured Mobile Web Pages, WACV 2023.
+Official implementation of Generative Colorization of Structured Mobile Web Pages, WACV 2023.
 
 [ArXiv](https://arxiv.org/abs/2212.11541) | [Dataset](docs/dataset.md) | [Pre-trained models](docs/pretrained_models.md)
 
