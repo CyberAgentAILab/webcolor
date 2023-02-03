@@ -72,7 +72,7 @@ poetry run python -m webcolor.main test --model $MODEL_NAME --ckpt_path $CKPT_PA
 ```
 
 The following command calculates Pixel-FCD and contrast violations and takes a
-long time to complete (about three hours with 24 workers in our environment).
+long time to complete (about four hours with 24 workers in our environment).
 
 ```bash
 MODEL_NAME=CVAE  # {CVAE,NAR,AR,Stats}
