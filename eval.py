@@ -1,6 +1,7 @@
 import argparse
 import multiprocessing as mp
 import tempfile
+from distutils.util import strtobool
 from pathlib import Path
 from typing import Tuple
 
@@ -93,12 +94,12 @@ def main() -> None:
 
     # compute metrics
     score = pixel_fcd.compute().item()
-    print(f"Pixel-FCD {score*1e3:.3f} x 1e-3")
+    print(f"Pixel-FCD {score*1e3:.2f} x 1e-3")
 
     print("Contrast violation:")
     result = contrast.compute()
     for key, value in result.items():
-        print(f"\t{key} {value.item():.3f}")
+        print(f"\t{key} {value.item():.2f}")
 
 
 def load_models(args: argparse.Namespace) -> Tuple[LitBaseGenerator, Upsampler]:
@@ -202,7 +203,7 @@ def parse_args() -> argparse.Namespace:
     )
     parser.add_argument(
         "--sampling",
-        type=bool,
+        type=lambda x: bool(strtobool(x)),  # https://stackoverflow.com/a/59579733
         default=False,
         help="`sampling` parameter for Stats model",
     )
