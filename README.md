@@ -93,8 +93,8 @@ For details on the pre-trained models, please see [this document](docs/pretraine
     author = {Kotaro Kikuchi and Naoto Inoue and Mayu Otani and Edgar Simo-Serra and Kota Yamaguchi},
     booktitle = {IEEE/CVF Winter Conference on Applications of Computer Vision (WACV)},
     year = {2023},
-    pages = {3650-3659},
-    doi = {}
+    pages = {3639-3648},
+    doi = {10.1109/WACV56688.2023.00364}
 }
 ```
 
