@@ -6,8 +6,8 @@ The following table summarizes the performance of the pre-trained models and the
 URLs of checkpoints and configurations. The scores differ from the paper due to
 refactoring of the code (especially AR, which improves performance
 substantially). We set `--seed_everything 0` for both training and evaluation.
-The training logs can be found at
-[TensorBoard.dev](https://tensorboard.dev/experiment/FQPauprTR5Clxgp6kdjNLQ/).
+The training logs can be found ~at
+[TensorBoard.dev](https://tensorboard.dev/experiment/FQPauprTR5Clxgp6kdjNLQ/)~ [here](https://github.com/CyberAgentAILab/webcolor/issues/2#issuecomment-1844039140).
 
 Name|Accuracy (RGB)|Accuracy (Alpha)|F-score (RGB)|F-score (Alpha)|BG-FCD|Text-FCD|Pixel-FCD|Contrast (%&nbsp;Pages)|Contrast (#&nbsp;Elements)|URL|Note
 ---|---|---|---|---|---|---|---|---|---|---|---
